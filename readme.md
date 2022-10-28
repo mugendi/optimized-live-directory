@@ -1,24 +1,21 @@
-/**
- * Copyright (c) 2022 Anthony Mugendi
- *
- * This software is released under the MIT License.
- * https://opensource.org/licenses/MIT
- */
+<!--
+ Copyright (c) 2022 Anthony Mugendi
+
+ This software is released under the MIT License.
+ https://opensource.org/licenses/MIT
+-->
+
+# optimized-live-directory
 
 
+```javascript
+let optimizedLiveDir = require('optimized-live-directory');
 
 const HyperExpress = require('hyper-express');
 const webserver = new HyperExpress.Server();
 
-
-let optimizedLiveDir = require('.');
-
 // determine your directories
-let assetDirs = [
-	'/home/mugz/projects/node/cmsish/apps/server/www/public/assets',
-	'/home/mugz/projects/node/cmsish/apps/server/www/public/dist',
-	'/home/mugz/projects/node/cmsish/apps/server/www/public/html',
-];
+let assetDirs = ['/dir/one', '/dir/two', '/dir/three'];
 
 let opts = {};
 
@@ -46,4 +43,4 @@ webserver
 	.listen(3600)
 	.then((socket) => console.log('Webserver started on port 3500'))
 	.catch((error) => console.log('Failed to start webserver on port 3500'));
-
+```
