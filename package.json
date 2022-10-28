@@ -1,0 +1,30 @@
+{
+  "name": "optimized-live-directory",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "brace-expansion": "^2.0.1",
+    "bytes": "^3.1.2",
+    "clean-css": "^5.3.1",
+    "html-minifier": "^4.0.0",
+    "hyper-express-route-path": "^1.0.0",
+    "imagemin": "7",
+    "imagemin-gifsicle": "^7.0.0",
+    "imagemin-jpeg-recompress": "^7.0.0",
+    "imagemin-pngquant": "^9.0.2",
+    "imagemin-webp": "6",
+    "live-directory": "^2.3.2",
+    "svgo": "^3.0.0",
+    "terser": "^5.15.1"
+  },
+  "devDependencies": {
+    "hyper-express": "^6.5.1"
+  }
+}
