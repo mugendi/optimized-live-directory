@@ -15,4 +15,4 @@ THis ensures your site is and remains fully optimized. Additionally, because Liv
 
 It is unlikely that you will use this module alone. It is created to be used as part of [live-directory-static](https://www.npmjs.com/package/live-directory-static).
 
-See [How To Use](./usage.md)
+See [How To Use](https://github.com/mugendi/optimized-live-directory/blob/master/usage.md)
