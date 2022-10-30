@@ -33,13 +33,30 @@ class miniLiveDir extends Minifier {
 
 		this.opts = merge(
 			{
-				firstInstanceOnly: true,
-
-				serve: {
-					// past this limit, we do not load files ti LiveDirectory
+				// Memory used by live directory
+				memory: {
+					// maximum memory we will allow live directory to use
+					maxUsed: '500mb',
+					// maximum size of file we load into live directory
 					bufferLimit: '500kb',
 				},
 
+				// Filters
+				filter: {
+					extensions: [
+						'.js',
+						'.css',
+						'.webp',
+						'.png',
+						'.jpg',
+						'.jpeg',
+						'.gif',
+						'.svg',
+						'.html',
+					],
+				},
+
+				// How we handle minification
 				minify: {
 					// minify html
 					html: {
@@ -75,9 +92,11 @@ class miniLiveDir extends Minifier {
 		);
 
 		// format buffer limit
-		this.opts.serve.bufferLimit = this.#to_bytes(
-			this.opts.serve.bufferLimit
+		this.opts.memory.bufferLimit = this.#to_bytes(
+			this.opts.memory.bufferLimit
 		);
+
+		this.opts.memory.maxUsed = this.#to_bytes(this.opts.memory.maxUsed);
 
 		this.#init();
 	}
@@ -94,20 +113,42 @@ class miniLiveDir extends Minifier {
 	async #init() {
 		if (this.liveDirs) return;
 
-		let { bufferLimit } = this.opts.serve || 300000;
+		let { bufferLimit, maxUsed } = this.opts.memory || 300000;
 
 		this.liveDirs = [];
+
+		this.memoryUsed = 0;
 
 		// console.log(paths);
 		for (let path of this.paths) {
 			const liveDir = new LiveDirectory({
 				path,
+				keep: {
+					extensions: this.opts.filter?.extensions || [],
+					// We only want to serve files with these extensions
+				},
 				ignore: (path, stats) => {
+					// Allow directories
 					if (!stats || stats.isDirectory()) return false;
 
-					let resp = stats && stats.size > bufferLimit;
-					// console.log(path, resp);
-					return resp;
+					// 1. Filter by path
+
+					// 2. Filter by
+
+					// if we have reached the max memory
+					// return true to ignore
+					if (maxUsed < this.memoryUsed) {
+						return true;
+					}
+
+					// if file size is above our buffer limit,
+					// then we must return true to ignore
+					if (stats.size > bufferLimit) {
+						return true;
+					} else {
+						this.memoryUsed += stats.size;
+						return false;
+					}
 				},
 			});
 
@@ -144,10 +185,12 @@ class miniLiveDir extends Minifier {
 	}
 
 	#serve_file(filePath) {
-		let { bufferLimit } = this.opts.serve || 300000;
+		let { bufferLimit } = this.opts.memory || 300000;
 
 		let stat = statSync(filePath);
 		let extension = path.extname(filePath);
+
+		// console.log(bufferLimit , stat.size);
 
 		// if we are below buffer limit
 		if (bufferLimit > stat.size) {
@@ -158,7 +201,6 @@ class miniLiveDir extends Minifier {
 			this.static.content = content;
 			this.static.mode = 'fileBuffer';
 			this.static.status = 'Successful';
-
 		} else {
 			// console.log(file.content.length);
 			const readable = createReadStream(filePath);
@@ -170,7 +212,7 @@ class miniLiveDir extends Minifier {
 
 			// stream the file
 			// response.type(extension).stream(readable);
-			this.static.extension= extension;
+			this.static.extension = extension;
 			this.static.stream = readable;
 			this.static.mode = 'fileStream';
 		}
@@ -185,7 +227,7 @@ class miniLiveDir extends Minifier {
 		if (resp.length == 0) return null;
 
 		// else return first or all instances
-		return this.opts.firstInstanceOnly ? resp[0] : resp;
+		return resp[0] || null;
 	}
 
 	fetch(request) {
@@ -226,12 +268,11 @@ class miniLiveDir extends Minifier {
 					};
 				}
 
-				this.static.extension = file.extension
+				this.static.extension = file.extension;
 				this.static.status = 'Successful';
 				this.static.mode = 'fileBuffer';
 				this.static.fromCache = true;
 				this.static.content = content;
-
 			} else {
 				// try to find file...
 				file = this.#find_file(filePath);

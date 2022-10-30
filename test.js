@@ -32,6 +32,7 @@ webserver.get('/assets/*', (request, response) => {
 
 	// inspect what has been served
 	if (resp.mode == 'fileStream') {
+		
 		response.type(resp.extension).stream(resp.stream);
 	} else if (resp.mode == 'fileBuffer') {
 		response.type(resp.extension).send(resp.content);

@@ -7,48 +7,12 @@
 
 # optimized-live-directory
 
-```javascript
-let optimizedLiveDir = require('optimized-live-directory');
+This module uses [nile-directory](https://www.npmjs.com/package/nile-directory) to manage static resources. But more than just managing the resources, it ensures that all resources that can be minified are kept minified.
 
-const HyperExpress = require('hyper-express');
-const webserver = new HyperExpress.Server();
+Minification works for css, images, html (by default) and javascript (if user enabled). Because LiveDirectory manages resource watching and reloading, then the re-done whenever resources change.
 
-// determine your directories
-let assetDirs = ['/dir/one', '/dir/two', '/dir/three'];
+THis ensures your site is and remains fully optimized. Additionally, because LiveDirectory essentially keeps resources in memory, your site works without dealing with disk I/O for most on of the time.
 
-let opts = {};
+It is unlikely that you will use this module alone. It is created to be used as part of [live-directory-static](https://www.npmjs.com/package/live-directory-static).
 
-// this will load all the files within the directories
-// you can pass options to determine how it works
-let optiDir = new optimizedLiveDir(assetDirs, opts);
-
-// Create GET route to serve 'Hello World'
-webserver.get('/assets/*', (request, response) => {
-	// you can serve files directly now
-	let resp = optiDir.fetch(request);
-
-	// sho optimizations, if any, that have been done to this resource
-	console.log(resp.optimization);
-
-	// inspect if mode is fileStream, then stream 
-	// The library automatically determines which files will be streamed
-	if (resp.mode == 'fileStream') {
-		response.type(resp.extension).stream(resp.stream);
-	} 
-	// if buffer then send
-	else if (resp.mode == 'fileBuffer') {
-		response.type(resp.extension).send(resp.content);
-	}
-
-	if (resp.status == 'Failed') {
-		// send 404
-		response.status(404).end();
-	}
-});
-
-// Activate webserver by calling .listen(port, callback);
-webserver
-	.listen(3600)
-	.then((socket) => console.log('Webserver started on port 3500'))
-	.catch((error) => console.log('Failed to start webserver on port 3500'));
-```
+See [How To Use](/readme.md)
