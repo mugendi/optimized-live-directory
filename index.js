@@ -143,17 +143,7 @@ class miniLiveDir extends Minifier {
 		return null;
 	}
 
-	#serve_file(filePath, response) {
-		if (
-			!response?.header ||
-			!response?.stream ||
-			!response?.end ||
-			!response?.status ||
-			!response?.type
-		) {
-			throw new Error('Incorrect response handler passed');
-		}
-
+	#serve_file(filePath) {
 		let { bufferLimit } = this.opts.serve || 300000;
 
 		let stat = statSync(filePath);
@@ -163,10 +153,12 @@ class miniLiveDir extends Minifier {
 		if (bufferLimit > stat.size) {
 			// we serve minified content by default
 			let content = readFileSync(filePath);
-			// send file content
-			response.status(200).type(extension).send(content);
-			this.served.mode = 'fileBuffer';
-			this.served.status = 'Successful';
+
+			this.static.extension = extension;
+			this.static.content = content;
+			this.static.mode = 'fileBuffer';
+			this.static.status = 'Successful';
+
 		} else {
 			// console.log(file.content.length);
 			const readable = createReadStream(filePath);
@@ -177,8 +169,10 @@ class miniLiveDir extends Minifier {
 			});
 
 			// stream the file
-			response.type(extension).stream(readable);
-			this.served.mode = 'fileStream';
+			// response.type(extension).stream(readable);
+			this.static.extension= extension;
+			this.static.stream = readable;
+			this.static.mode = 'fileStream';
 		}
 	}
 
@@ -194,10 +188,10 @@ class miniLiveDir extends Minifier {
 		return this.opts.firstInstanceOnly ? resp[0] : resp;
 	}
 
-	serve(request, response) {
+	fetch(request) {
 		let filePath = routePath(request);
 
-		this.served = {
+		this.static = {
 			status: 'Failed',
 			fromCache: false,
 			minified: false,
@@ -214,14 +208,14 @@ class miniLiveDir extends Minifier {
 					content = file.minified;
 
 					// show is minified
-					this.served.minified = true;
+					this.static.minified = true;
 
 					// calc optimization
 					let origSize = Buffer.byteLength(file.buffer);
 					let minifiedSize = Buffer.byteLength(file.minified);
 					let sizeDiff = origSize - minifiedSize;
 
-					this.served.optimization = {
+					this.static.optimization = {
 						size: {
 							original: bytes(origSize),
 							minified: bytes(minifiedSize),
@@ -232,22 +226,23 @@ class miniLiveDir extends Minifier {
 					};
 				}
 
-				this.served.status = 'Successful';
-				this.served.mode = 'fileBuffer';
-				this.served.fromCache = true;
+				this.static.extension = file.extension
+				this.static.status = 'Successful';
+				this.static.mode = 'fileBuffer';
+				this.static.fromCache = true;
+				this.static.content = content;
 
-				response.status(200).type(file.extension).send(content);
 			} else {
 				// try to find file...
 				file = this.#find_file(filePath);
 
 				if (file) {
-					this.#serve_file(file, response);
+					this.#serve_file(file);
 				}
 			}
 		}
 
-		return this.served;
+		return this.static;
 	}
 }
 

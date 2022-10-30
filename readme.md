@@ -7,7 +7,6 @@
 
 # optimized-live-directory
 
-
 ```javascript
 let optimizedLiveDir = require('optimized-live-directory');
 
@@ -26,15 +25,24 @@ let optiDir = new optimizedLiveDir(assetDirs, opts);
 // Create GET route to serve 'Hello World'
 webserver.get('/assets/*', (request, response) => {
 	// you can serve files directly now
-	let served = optiDir.serve(request, response);
+	let resp = optiDir.fetch(request);
 
-	// inspect what has been served
-	console.log(served);
+	// sho optimizations, if any, that have been done to this resource
+	console.log(resp.optimization);
 
-	// if file is not found, the status is 'Failed'
-	if (served.status == 'Failed') {
-        // send 404
-        response.status(404).end()
+	// inspect if mode is fileStream, then stream 
+	// The library automatically determines which files will be streamed
+	if (resp.mode == 'fileStream') {
+		response.type(resp.extension).stream(resp.stream);
+	} 
+	// if buffer then send
+	else if (resp.mode == 'fileBuffer') {
+		response.type(resp.extension).send(resp.content);
+	}
+
+	if (resp.status == 'Failed') {
+		// send 404
+		response.status(404).end();
 	}
 });
 
