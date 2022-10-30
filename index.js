@@ -231,8 +231,9 @@ class miniLiveDir extends Minifier {
 	}
 
 	fetch(request) {
-		let filePath = routePath(request);
 
+		let filePath = routePath(request);
+		
 		this.static = {
 			status: 'Failed',
 			fromCache: false,
