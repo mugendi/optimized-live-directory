@@ -1,6 +1,6 @@
 {
 	"name": "optimized-live-directory",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Live Directory that keeps files optimized in memory and will re-optimize them whenever they change",
 	"main": "index.js",
 	"scripts": {

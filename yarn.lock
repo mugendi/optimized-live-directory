@@ -1179,10 +1179,10 @@ human-signals@^2.1.0:
   resolved "https://registry.yarnpkg.com/human-signals/-/human-signals-2.1.0.tgz#dc91fcba42e4d06e4abaed33b3e7a3c02f514ea0"
   integrity sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==
 
-hyper-express-route-path@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/hyper-express-route-path/-/hyper-express-route-path-1.0.0.tgz#11170ad96c0faba605dded943e8280713546b228"
-  integrity sha512-BcR/66yB6Nf/AxBAVj85dKV/C7R30yhaFqdy2UyoGWBgXIbf/2QcoC6AJomCwNP3P1qg5U04hix6xDACc+vlKQ==
+hyper-express-route-path@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/hyper-express-route-path/-/hyper-express-route-path-1.0.1.tgz#368bc85cdfca41c6fb29ca6fbf537d0f5f5f9b3e"
+  integrity sha512-g+akA99qE1Bir5+wzfaqr5/RFyfWe6J5TySKycU4xUc1N1xl1ZDgXQYRr4yVl1fAtS1mNc+EL3LHASMmNPoTeQ==
   dependencies:
     path-match "^1.2.4"
 
