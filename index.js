@@ -188,16 +188,18 @@ class miniLiveDir extends Minifier {
 		let { bufferLimit } = this.opts.memory || 300000;
 
 		let stat = statSync(filePath);
-		let extension = path.extname(filePath);
+		let extension = path.extname(filePath).replace(/^\./, '');
 
 		// console.log(bufferLimit , stat.size);
+		this.static.path = filePath;
+		this.static.name = path.basename(filePath);
+		this.static.extension = extension;
 
 		// if we are below buffer limit
 		if (bufferLimit > stat.size) {
 			// we serve minified content by default
 			let content = readFileSync(filePath);
 
-			this.static.extension = extension;
 			this.static.content = content;
 			this.static.mode = 'fileBuffer';
 			this.static.status = 'Successful';
@@ -231,9 +233,8 @@ class miniLiveDir extends Minifier {
 	}
 
 	fetch(request) {
-
 		let filePath = routePath(request);
-		
+
 		this.static = {
 			status: 'Failed',
 			fromCache: false,
@@ -274,6 +275,8 @@ class miniLiveDir extends Minifier {
 				this.static.mode = 'fileBuffer';
 				this.static.fromCache = true;
 				this.static.content = content;
+				this.static.path = file.path;
+				this.static.name = file.name;
 			} else {
 				// try to find file...
 				file = this.#find_file(filePath);
